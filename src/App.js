@@ -1,24 +1,74 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import PageTemplate from "./components/PageTemplate";
+import TagsTemplate from "./components/TagsTemplate";
+import TagItem from "./components/TagItem";
+import Search from "./components/Search";
+import PlayerTemplate from './components/PlayerTemplate';
+import Title from './components/Title';
+import Time from './components/Time';
+import TitleAndTimeBox from './components/TitleAndTimeBox';
+import Progress from './components/Progress';
+import ButtonsAndVolumeBox from './components/ButtonsAndVolumeBox';
+import ButtonsBox from './components/ButtonsBox';
+import Loop from './components/Loop';
+import Previous from './components/Previous';
+import Play from './components/Play';
+import Next from './components/Next';
+import Shuffle from './components/Shuffle';
+import Volume from './components/Volume';
+import PlaylistTemplate from './components/PlaylistTemplate';
+import PlaylistItem from './components/PlaylistItem';
 
-function App() {
+import loopCurrent from "./icons/loop_current.png";
+import previous from "./icons/previous.png";
+import play from "./icons/play.png";
+import pause from "./icons/pause.png";
+import next from "./icons/next.png";
+import shuffle from "./icons/shuffle_all.png";
+
+
+function App({tracks}) {
+  const [trackNo, setTrackNo] = useState(0);
+  const [trackTime, setTrackTime] = useState(0);
+
+  useEffect(() => {
+    const audio = new Audio(tracks[trackNo].url)
+
+    setTrackTime(audio.duration);
+    console.log(audio.duration)
+  }, [trackNo, tracks])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <PageTemplate>
+      <TagsTemplate>
+        {
+          tracks.map(track => <TagItem onClick={() => {}} status="" key={track.title} tag={track.tags[0]}/>)
+        }
+      </TagsTemplate>
+      <Search onChange={() => {}} placeholder="" value=""/>
+      <PlayerTemplate>
+        <TitleAndTimeBox>
+          <Title title={tracks[0].title}/>
+          <Time time={trackTime}/>
+        </TitleAndTimeBox>
+      <Progress value="" onChange={() => {}} onMouseUp={() => {}} onTouchEnd={() => {}} />
+      <ButtonsAndVolumeBox >
+        <ButtonsBox>
+          <Loop src={loopCurrent} onClick={() => {}}/>
+          <Previous src={previous} onClick={() => {}}/>
+          <Play src={play} onClick={() => {}}/>
+          <Next src={next} onClick={() => {}}/>
+          <Shuffle src={shuffle} onClick={() => {}}/>
+        </ButtonsBox>
+        <Volume value="" onChange={() => {}}/>
+      </ButtonsAndVolumeBox>
+      </PlayerTemplate>
+      <PlaylistTemplate>
+      {
+          tracks.map(track => <PlaylistItem data_key="" src="" onClick={() => {}} status="" key={track.title} title={track.title}/>)
+        }
+      </PlaylistTemplate>
+    </PageTemplate>
   );
 }
 
