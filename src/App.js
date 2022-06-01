@@ -18,6 +18,8 @@ import Shuffle from './components/Shuffle';
 import Volume from './components/Volume';
 import PlaylistTemplate from './components/PlaylistTemplate';
 import PlaylistItem from './components/PlaylistItem';
+import {storage, app} from "./database/firabseConfig";
+import { ref, getMetadata, listAll, getDownloadURL } from "firebase/storage"
 
 import loopCurrent from "./icons/loop_current.png";
 import previous from "./icons/previous.png";
@@ -30,12 +32,19 @@ import shuffle from "./icons/shuffle_all.png";
 function App({tracks}) {
   const [trackNo, setTrackNo] = useState(0);
   const [trackTime, setTrackTime] = useState(0);
+  const audioRef = ref(storage);
 
   useEffect(() => {
     const audio = new Audio(tracks[trackNo].url)
-
-    setTrackTime(audio.duration);
-    console.log(audio.duration)
+    // fetch('https://console.firebase.google.com/project/audio-palyer/storage/audio-palyer.appspot.com/files').then(data => {
+    //   console.log(data)
+    // }).catch(err => console.log(err))
+    listAll(audioRef).then(res => res.items.forEach(itemRef => 
+      getDownloadURL(itemRef).then(metadata => console.log(metadata))
+      )
+    )
+    //setTrackTime(audio.duration);
+    //console.log(audio.duration)
   }, [trackNo, tracks])
 
   return (
