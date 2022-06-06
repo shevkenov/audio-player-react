@@ -27,37 +27,46 @@ import play from "./icons/play.png";
 import pause from "./icons/pause.png";
 import next from "./icons/next.png";
 import shuffle from "./icons/shuffle_all.png";
+import { async } from '@firebase/util';
 
 
 function App({tracks}) {
+  const [trackList, setTrackList] = useState([]);
   const [trackNo, setTrackNo] = useState(0);
   const [trackTime, setTrackTime] = useState(0);
   const audioRef = ref(storage);
 
   useEffect(() => {
-    const audio = new Audio(tracks[trackNo].url)
-    // fetch('https://console.firebase.google.com/project/audio-palyer/storage/audio-palyer.appspot.com/files').then(data => {
-    //   console.log(data)
-    // }).catch(err => console.log(err))
-    listAll(audioRef).then(res => res.items.forEach(itemRef => 
-      getDownloadURL(itemRef).then(metadata => console.log(metadata))
-      )
-    )
+    const getAllItemsFromStorage = async() => {
+      const allItems = await listAll(audioRef);
+      allItems.items.forEach(async(item) => {
+        const name = await getMetadata(item);
+        const url = await getDownloadURL(item);
+        const audio = new Audio(url);
+        console.log(audio)
+        setTrackList(all => [...all, {title: name.name, url, tags: ["rnb"]}])
+      })
+    }
+
+    getAllItemsFromStorage();
+
+    console.log(trackList)
+
     //setTrackTime(audio.duration);
     //console.log(audio.duration)
-  }, [trackNo, tracks])
-
+  }, [])
+  
   return (
     <PageTemplate>
       <TagsTemplate>
         {
-          tracks.map(track => <TagItem onClick={() => {}} status="" key={track.title} tag={track.tags[0]}/>)
+          trackList.length && trackList.map(track => <TagItem onClick={() => {}} status="" key={track.title} tag={track.tags[0]}/>)
         }
       </TagsTemplate>
       <Search onChange={() => {}} placeholder="" value=""/>
       <PlayerTemplate>
         <TitleAndTimeBox>
-          <Title title={tracks[0].title}/>
+          <Title title={trackList[0] && trackList[0].title}/>
           <Time time={trackTime}/>
         </TitleAndTimeBox>
       <Progress value="" onChange={() => {}} onMouseUp={() => {}} onTouchEnd={() => {}} />
